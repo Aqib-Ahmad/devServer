@@ -1,6 +1,6 @@
 const validator = require("validator");
 
-const valodateSignupData = (req) => {
+const validateSignupData = (req) => {
   const { firstName, lastName, emailId, password } = req.body;
   if (!validator.isEmail(emailId)) {
     throw new Error("email is not valid");
@@ -10,4 +10,4 @@ const valodateSignupData = (req) => {
     throw new Error("firstName & lastName must be in 4 to 50 car");
   }
 };
-module.exports = valodateSignupData;
+module.exports = validateSignupData;
