@@ -10,4 +10,20 @@ const validateSignupData = (req) => {
     throw new Error("firstName & lastName must be in 4 to 50 car");
   }
 };
+
+const validateEditData = (req) => {
+  const allowesEditFields = [
+    "firstName",
+    "lastName",
+    "age",
+    "gender",
+    "about",
+    "skills",
+  ];
+  const isEditAllowed = Object.keys(req.body).every((field) =>
+    allowesEditFields.includes(field)
+  );
+
+  return isEditAllowed;
+};
 module.exports = validateSignupData;
