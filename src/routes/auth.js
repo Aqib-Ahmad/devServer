@@ -46,4 +46,20 @@ authRouter.post("/logout", (req, res) => {
   res.cookie("token", null, { expires: new Date(Date.now()) });
   res.send("User logout successfull..");
 });
+
+authRouter.patch("/resetpassword", async (req, res) => {
+  try {
+    const { emailId, password } = req.body;
+    const user = await User.findOne({ emailId: emailId });
+    if (!user) {
+      throw new Error("User not found with this emailId");
+    }
+    const passwordHash = await bcrypt.hash(password, 10);
+    user.password = passwordHash;
+    await user.save();
+    res.send("Reset password successfull..");
+  } catch (error) {
+    res.status(400).send("Error in resetting password: " + error.message);
+  }
+});
 module.exports = authRouter;
