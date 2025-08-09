@@ -1,9 +1,8 @@
 const express = require("express");
 const { userAuth } = require("../middlewares/auth");
-const requestRouter = express.Router();
 const ConnectionRequest = require("../models/connectionRequest");
 const User = require("../models/user");
-
+const requestRouter = express.Router();
 requestRouter.post(
   "/request/send/:status/:toUserId",
   userAuth,
@@ -12,7 +11,8 @@ requestRouter.post(
       const fromUserId = req.user._id;
       const toUserId = req.params.toUserId;
       const status = req.params.status;
-      // intrested or ignored
+
+      // allowing to intrested, ignored
       const allowedStatusType = ["intrested", "ignored"];
       if (!allowedStatusType.includes(status)) {
         return res
@@ -30,13 +30,13 @@ requestRouter.post(
       if (existingConnectionRequest) {
         return res
           .status(400)
-          .json({ message: " connection request already exists" });
+          .json({ message: "connection request already exists" });
       }
 
-      // checking user is in Db or not
-      const user = await User.findById(toUserId);
-      if (!user) {
-        return res.json({ message: "user is not in database" });
+      //  is receiver exists in DB or not
+      const toUser = await User.findById(toUserId);
+      if (!toUser) {
+        return res.send("user is not in found db");
       }
 
       const connectionRequest = new ConnectionRequest({
@@ -46,8 +46,9 @@ requestRouter.post(
       });
       const data = await connectionRequest.save();
       res.json({ message: "connection request send successfully", data: data });
+      // res.send("data is sending");
     } catch (error) {
-      res.status(400).send("ERROR " + error.message);
+      res.status(400).send("ERROR" + error.message);
     }
   }
 );
@@ -63,6 +64,7 @@ requestRouter.post(
       if (!allowedStatus.includes(status)) {
         return res.status(400).json({ message: "status not allowed " });
       }
+
       const connectionRequest = await ConnectionRequest.findOne({
         _id: requestId,
         toUserId: loggedInUser._id,
@@ -81,5 +83,4 @@ requestRouter.post(
     }
   }
 );
-
 module.exports = requestRouter;

@@ -4,7 +4,7 @@ const ConnectionRequest = require("../models/connectionRequest");
 const User = require("../models/user");
 const userRouter = express.Router();
 
-const USER_SAFE_DATA = "firstName lastName";
+const USER_SAFE_DATA = "firstName lastName age about  photoUrl";
 // get all pending req of login user
 userRouter.get("/user/requests/received", userAuth, async (req, res) => {
   try {
@@ -13,7 +13,9 @@ userRouter.get("/user/requests/received", userAuth, async (req, res) => {
       toUserId: loggedUser._id,
       status: "intrested",
       // }).populate("fromUserId", ["firstName", "lastName"]); //"firstName", "lastName" from req user
-    }).populate("fromUserId", USER_SAFE_DATA);
+    })
+      .populate("fromUserId", USER_SAFE_DATA)
+      .populate("toUserId", USER_SAFE_DATA);
     res.json({ message: "user requests are ", data: connenctionRequests });
   } catch (error) {
     res.status(400).send("error in pending req " + error.message);
@@ -37,7 +39,8 @@ userRouter.get("/user/connections", userAuth, async (req, res) => {
       }
       return row.toUserId;
     });
-    res.send(data);
+    // res.send(connenctionRequests);
+    res.send(connenctionRequests);
   } catch (error) {
     res.status(400).send("error in pending req " + error.message);
   }
